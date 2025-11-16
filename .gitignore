@@ -1,0 +1,20 @@
+# Ignore test files
+TEST_TELEGRAM.html
+TELEGRAM_SETUP.md
+
+# Ignore sensitive information (if you want to keep tokens private)
+# Uncomment the line below if you don't want to commit tokens
+# script.js
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+

