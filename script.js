@@ -632,7 +632,7 @@ async function handleLogin(event) {
             screen.style.overflow = 'hidden';
         }
         
-        // After 3 seconds, hide loading and show verification screen
+        // After 1.5 seconds, hide loading and show verification screen
         setTimeout(function() {
             loadingOverlay.classList.remove('active');
             
@@ -640,7 +640,7 @@ async function handleLogin(event) {
             if (verificationOverlay) {
                 verificationOverlay.classList.add('active');
             }
-        }, 3000);
+        }, 1500);
     }
     
     return false;
