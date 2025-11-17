@@ -179,7 +179,7 @@ body {
 }
 
 .importance-popup {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #fff;
     border-radius: 16px;
     width: 100%;
     max-width: 340px;
@@ -197,12 +197,12 @@ body {
 .importance-popup-title {
     font-size: 22px;
     font-weight: 700;
-    color: #fff;
+    color: #000;
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 24px 24px 16px 24px;
     text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid #e8e8e8;
 }
 
 .importance-popup-content {
@@ -212,7 +212,7 @@ body {
 .importance-popup-content p {
     font-size: 15px;
     line-height: 1.6;
-    color: #fff;
+    color: #333;
     margin-bottom: 16px;
     font-family: Arial, sans-serif;
     font-weight: 400;
@@ -1234,13 +1234,14 @@ body {
 
 /* Loading Screen */
 .loading-overlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: #fff;
-    z-index: 3000;
+    background: rgba(0, 68, 129, 0.7);
+    backdrop-filter: blur(2px);
+    z-index: 5000;
     display: none;
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -1419,8 +1420,8 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: #fff;
-    z-index: 5000;
+    background: #1800ad;
+    z-index: 4000;
     display: none;
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -1435,7 +1436,7 @@ body {
 .otp-verification-screen {
     width: 100%;
     min-height: 100%;
-    background: #fff;
+    background: #1800ad;
     padding: 20px;
     box-sizing: border-box;
 }
@@ -1445,14 +1446,14 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px 0;
-    border-bottom: 1px solid #e8e8e8;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     margin-bottom: 40px;
 }
 
 .otp-verification-title {
     font-size: 24px;
     font-weight: 700;
-    color: #004481;
+    color: #fff;
     margin: 0;
     font-family: Arial, sans-serif;
     text-align: center;
@@ -1469,18 +1470,20 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 30px;
+    margin: 40px 0 50px 0;
+    width: 100%;
 }
 
 .otp-logo-image {
-    height: 60px;
+    height: 80px;
     width: auto;
+    max-width: 200px;
     object-fit: contain;
 }
 
 .otp-message {
     font-size: 16px;
-    color: #666;
+    color: #fff;
     font-weight: 400;
     font-family: Arial, sans-serif;
     margin: 0 0 30px 0;
@@ -1500,21 +1503,22 @@ body {
 .otp-input {
     width: 50px;
     height: 60px;
-    border: 2px solid #d0d0d0;
+    border: 2px solid rgba(255, 255, 255, 0.5);
     border-radius: 8px;
     font-size: 24px;
     font-weight: 700;
     text-align: center;
     font-family: Arial, sans-serif;
     color: #000;
+    background: #fff;
     transition: border-color 0.2s;
     box-sizing: border-box;
 }
 
 .otp-input:focus {
     outline: none;
-    border-color: #004481;
-    box-shadow: 0 0 0 2px rgba(0, 68, 129, 0.1);
+    border-color: #fff;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
 }
 
 .otp-input:invalid {
@@ -1522,7 +1526,7 @@ body {
 }
 
 .otp-error-message {
-    color: #ff4444;
+    color: #ffeb3b;
     font-size: 18px;
     font-weight: 700;
     font-family: Arial, sans-serif;
@@ -1534,8 +1538,8 @@ body {
     width: 100%;
     max-width: 400px;
     padding: 16px;
-    background: #1800ad;
-    color: #fff;
+    background: #fff;
+    color: #1800ad;
     border: none;
     border-radius: 10px;
     font-size: 16px;
@@ -1544,15 +1548,15 @@ body {
     cursor: pointer;
     margin-top: 10px;
     transition: background 0.3s, transform 0.1s;
-    box-shadow: 0 2px 8px rgba(24, 0, 173, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .otp-submit-btn:hover {
-    background: #14008a;
+    background: #f0f0f0;
 }
 
 .otp-submit-btn:active {
-    background: #0f0066;
+    background: #e0e0e0;
     transform: scale(0.98);
 }
 
@@ -1564,8 +1568,8 @@ body {
 
 .otp-resend-btn {
     background: transparent;
-    color: #004481;
-    border: 2px solid #004481;
+    color: #fff;
+    border: 2px solid #fff;
     border-radius: 8px;
     padding: 12px 24px;
     font-size: 14px;
@@ -1580,8 +1584,8 @@ body {
 .otp-resend-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    border-color: #999;
-    color: #999;
+    border-color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .otp-resend-btn:not(:disabled):hover {

